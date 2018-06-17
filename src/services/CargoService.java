@@ -4,24 +4,24 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import model.dao.AbstractDAO;
-import model.dao.ColaboradorDAO;
-import model.entites.Colaborador;
+import model.dao.CargoDAO;
+import model.entites.Cargo;
 import model.utils.Serializer;
 
 
-@WebServlet("/ColaboradorService")
-public class ColaboradorService extends Service<Colaborador, Long> {
+@WebServlet("/CargoService")
+public class CargoService extends Service<Cargo, Long> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected AbstractDAO<Colaborador, Long> createDao() {
-		return new ColaboradorDAO();
+	protected AbstractDAO<Cargo, Long> createDao() {
+		return new CargoDAO();
 	}
 
 	@Override
-	protected Colaborador parseEntityFromParams(HttpServletRequest request) throws Exception {
+	protected Cargo parseEntityFromParams(HttpServletRequest request) throws Exception {
 		Serializer serializer = new Serializer();
-		return serializer.desserialize(request.getReader(), Colaborador.class);
+		return serializer.desserialize(request.getReader(), Cargo.class);
 	}
 	
 	@Override

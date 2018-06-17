@@ -67,7 +67,7 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long> {
 	
 	@Override
 	protected PreparedStatement criarStatementRemover(Connection conexao, Long id) throws Exception {
-		PreparedStatement statement= conexao.prepareStatement("DELETE FROM ANIMAL WHERE id=?");
+		PreparedStatement statement= conexao.prepareStatement("DELETE FROM COLABORADOR WHERE CPF=?");
 		statement.setLong(1, id);
 		return statement;
 	}
@@ -93,13 +93,20 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long> {
 
 	@Override
 	protected PreparedStatement criarStatementPersistir(Connection conexao, Colaborador objeto) throws Exception {
-		PreparedStatement statement = conexao.prepareStatement("", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement statement = conexao.prepareStatement("INSERT INTO COLABORADOR (ID,NOME,CPF,DT_NASCIMENTO, GENERO, EMAIL,CTPS_NUM,PIS_PASEP,ID_CONTA_BANCARIA, ID_ENDERECO, ID_CARGO) VALUES (SEQ_COLABORADOR.NEXTVAL,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 		statement.setString(1, objeto.getNome());
+		statement.setLong(2, objeto.getCpf());
 		if (objeto.getDtNascimento() != null)
-			statement.setDate(2, new java.sql.Date(objeto.getDtNascimento().getTime()));
+			statement.setDate(3, new java.sql.Date(objeto.getDtNascimento().getTime()));
 		else
-			statement.setNull(2, java.sql.Types.DATE);
-		
+			statement.setNull(3, java.sql.Types.DATE);
+		statement.setString(4, objeto.getGenero());
+		statement.setString(5, objeto.getEmail());
+		statement.setLong(6, objeto.getCtpsNum());
+		statement.setLong(7, objeto.getPisPasep());
+		statement.setLong(8, objeto.getConta().getId());
+		statement.setLong(9, objeto.getEndereco().getId());
+		statement.setLong(9, objeto.getCargo().getId());
 		return statement;
 	}
 
