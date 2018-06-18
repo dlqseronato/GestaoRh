@@ -97,9 +97,9 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long> {
 		statement.setString(1, objeto.getNome());
 		statement.setLong(2, objeto.getCpf());
 		if (objeto.getDtNascimento() != null)
-			statement.setDate(3, new java.sql.Date(objeto.getDtNascimento().getTime()));
+			statement.setDate(3, objeto.getDtNascimento());
 		else
-			statement.setNull(3, java.sql.Types.DATE);
+			statement.setString(3,"");
 		statement.setString(4, objeto.getGenero());
 		statement.setString(5, objeto.getEmail());
 		statement.setLong(6, objeto.getCtpsNum());

@@ -73,6 +73,7 @@ public abstract class AbstractDAO<T, U> implements IGenericDAO<T, U> {
 			return;
 		} catch (Exception e) {
 			ultimaExcecao = e;
+			e.printStackTrace();
 		} finally {
 			try {
 				if (generatedKeys != null)

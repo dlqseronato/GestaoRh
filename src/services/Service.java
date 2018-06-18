@@ -24,7 +24,7 @@ public abstract class Service<T, U> extends HttpServlet {
 		try {
 			AbstractDAO<T, U> dao = createDao();
 			String action = parseActionFromParams(request);
-			if(action.equals("getAll")) {
+			if(action == null || action.equals("getAll") ) {
 				List<T> objects = dao.listar();
 				String serializedObjects = new Serializer().serialize(objects);
 				ok(response, serializedObjects);

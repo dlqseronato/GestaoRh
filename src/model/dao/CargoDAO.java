@@ -19,8 +19,8 @@ public class CargoDAO extends AbstractDAO<Cargo, Long> {
 	@Override
 	protected Cargo parseObjeto(ResultSet rs) throws Exception {
 		Cargo a = new Cargo(
-						rs.getLong("ID_CARGO"),
-						rs.getString("NOME_CARGO"),
+						rs.getLong("ID"),
+						rs.getString("NOME"),
 						rs.getString("DESCRICAO"),
 						rs.getLong("NIVEL"),
 						rs.getDouble("VALOR_BASE_HORA")
@@ -57,7 +57,7 @@ public class CargoDAO extends AbstractDAO<Cargo, Long> {
 
 	@Override
 	protected PreparedStatement criarStatementPersistir(Connection conexao, Cargo objeto) throws Exception {
-		PreparedStatement statement = conexao.prepareStatement("INSERT INTO CARGO (ID,NOME,DESCRICAO,NIVEL,VALOR_BASE_HORA) VALUES (SEQ_CARGO.NEXTVAL,?,?,?,?);", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement statement = conexao.prepareStatement("INSERT INTO CARGO (ID,NOME,DESCRICAO,NIVEL,VALOR_BASE_HORA) VALUES (SEQ_CARGO.NEXTVAL,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 		statement.setString(1, objeto.getNome());
 		statement.setString(2, objeto.getDescricao());
 		statement.setLong(3, objeto.getNivel());
