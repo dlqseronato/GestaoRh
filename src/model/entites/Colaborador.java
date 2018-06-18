@@ -24,8 +24,6 @@ public class Colaborador {
 		super();
 	}
 	
-
-
 	public long getId() {
 		return id;
 	}
@@ -114,28 +112,6 @@ public class Colaborador {
 
 
 
-	public Telefone getTelefone() {
-		return telefone;
-	}
-
-
-
-	public void setTelefone(Telefone telefone) {
-		this.telefone = telefone;
-	}
-
-
-
-	public Endereco getEndereco() {
-		return endereco;
-	}
-
-
-
-	public void setEndereco(Endereco endereco) {
-		this.endereco = endereco;
-	}
-
 	public Date getDtNascimento() {
 		return dtNascimento;
 	}
@@ -144,13 +120,6 @@ public class Colaborador {
 		this.dtNascimento = dtNascimento;
 	}
 
-	public Cargo getCargo() {
-		return cargo;
-	}
-
-	public void setCargo(Cargo cargo) {
-		this.cargo = cargo;
-	}
 
 
 
@@ -171,21 +140,55 @@ public class Colaborador {
 	}
 
 
-
 	public void setPisPasep(long pisPasep) {
 		this.pisPasep = pisPasep;
 	}
-
-
+	
+	
 
 	public ContaBancaria getConta() {
 		return conta;
 	}
 
-
-
 	public void setConta(ContaBancaria conta) {
 		this.conta = conta;
+	}
+
+	public Telefone getTelefone() {
+		return telefone;
+	}
+
+	public void setTelefone(Telefone telefone) {
+		this.telefone = telefone;
+	}
+
+	public Endereco getEndereco() {
+		return endereco;
+	}
+
+	public void setEndereco(Endereco endereco) {
+		this.endereco = endereco;
+	}
+
+	public Cargo getCargo() {
+		return cargo;
+	}
+
+	public void setCargo(Cargo cargo) {
+		this.cargo = cargo;
+	}
+
+	public Colaborador(long id, String nome, long cpf, Date dtNascimento, String genero, String email, long ctpsNum,
+			long pisPasep) {
+		super();
+		this.id = id;
+		this.nome = nome;
+		this.cpf = cpf;
+		this.dtNascimento = dtNascimento;
+		this.genero = genero;
+		this.email = email;
+		this.ctpsNum = ctpsNum;
+		this.pisPasep = pisPasep;
 	}
 
 
@@ -219,6 +222,7 @@ public class Colaborador {
 		this.cargo = cargo;
 	}
 
+	
 
 
 

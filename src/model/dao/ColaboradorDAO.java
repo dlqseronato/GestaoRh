@@ -22,6 +22,7 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long> {
 
 	@Override
 	protected Colaborador parseObjeto(ResultSet rs) throws Exception {
+		
 		Colaborador a = new Colaborador(
 				rs.getLong("ID"),
 				rs.getString("NOME"),
@@ -61,7 +62,17 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long> {
 						rs.getDouble("VALOR_BASE_HORA")
 						)
 				);
-
+/*
+		Colaborador a = new Colaborador(
+				rs.getLong("ID"),
+				rs.getString("NOME"),
+				rs.getLong("CPF"),
+				rs.getDate("DT_NASCIMENTO"),
+				rs.getString("GENERO"),
+				rs.getString("EMAIL"),
+				rs.getLong("CTPS_NUM"),
+				rs.getLong("PIS_PASEP"));
+				*/
 		return a;
 	}
 	
@@ -104,10 +115,20 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long> {
 		statement.setString(5, objeto.getEmail());
 		statement.setLong(6, objeto.getCtpsNum());
 		statement.setLong(7, objeto.getPisPasep());
-		statement.setLong(8, objeto.getConta().getId());
-		statement.setLong(9, objeto.getEndereco().getId());
-		statement.setLong(9, objeto.getCargo().getId());
+		statement.setLong(8, 1000);
+		statement.setLong(9, 1002);
+		try {
+			statement.setLong(8, objeto.getConta().getId());
+			statement.setLong(9, objeto.getEndereco().getId());
+			statement.setLong(10, objeto.getCargo().getId());
+		}catch (Exception e) {
+			statement.setLong(8, 0);
+			statement.setLong(9, 0);
+			statement.setLong(10, 0);
+		}
+		
 		return statement;
+	
 	}
 
 	@Override
