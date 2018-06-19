@@ -63,6 +63,7 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long> {
 						rs.getLong("NIVEL"),
 						rs.getDouble("VALOR_BASE_HORA")
 						)
+				,0
 				);
 /*
 		Colaborador a = new Colaborador(

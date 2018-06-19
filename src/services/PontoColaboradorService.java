@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -34,11 +36,7 @@ public class PontoColaboradorService {
         JAXBContext jaxbContext = JAXBContext.newInstance(PontoColaboradorService.class);
 
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        PontoColaborador ponto = (PontoColaborador) jaxbUnmarshaller.unmarshal(br);
-         
-        System.out.println("------  Dados da Banda  -------- \n");
-        System.out.println("Nome da Banda : "+ponto.getRegistros().get(1));
-          
+        PontoColaborador ponto = (PontoColaborador) jaxbUnmarshaller.unmarshal(br);       
 
         con.disconnect();
         

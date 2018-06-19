@@ -8,6 +8,7 @@ public class PontoColaborador {
 	private long id;
 	
 	private List<Date> registros;
+	
 
 	public long getId() {
 		return id;

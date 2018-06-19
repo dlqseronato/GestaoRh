@@ -19,6 +19,7 @@ public class Colaborador {
 	private Telefone telefone;	
 	private Endereco endereco;	
 	private Cargo cargo;
+	private double salarioAtual;
 	
 	public Colaborador() {
 		super();
@@ -205,7 +206,9 @@ public class Colaborador {
 			ContaBancaria conta, 
 			Telefone telefone, 
 			Endereco endereco, 
-			Cargo cargo) {
+			Cargo cargo,
+			double salarioAtual
+			) {
 		
 		super();
 		this.id = id;
@@ -220,6 +223,7 @@ public class Colaborador {
 		this.telefone = telefone;
 		this.endereco = endereco;
 		this.cargo = cargo;
+		this.salarioAtual = salarioAtual;
 	}
 
 	
