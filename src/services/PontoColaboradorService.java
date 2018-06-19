@@ -9,8 +9,7 @@ import java.net.URL;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-
-import com.sun.xml.internal.ws.util.Pool.Unmarshaller;
+import javax.xml.bind.Unmarshaller;
 
 import model.entites.PontoColaborador;
 
@@ -19,7 +18,7 @@ import model.entites.PontoColaborador;
 public class PontoColaboradorService {
 	private static int HTTP_COD_SUCESSO = 200;
 	
-	public static void buscaPontoColaborador() throws JAXBException {
+	public static PontoColaborador buscaPontoColaborador(long id) throws JAXBException {
 		 
 	try {
 		 
@@ -34,20 +33,22 @@ public class PontoColaboradorService {
                      
         JAXBContext jaxbContext = JAXBContext.newInstance(PontoColaboradorService.class);
 
-        javax.xml.bind.Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         PontoColaborador ponto = (PontoColaborador) jaxbUnmarshaller.unmarshal(br);
          
         System.out.println("------  Dados da Banda  -------- \n");
         System.out.println("Nome da Banda : "+ponto.getRegistros().get(1));
-   
-         
+          
 
         con.disconnect();
+        
+        return ponto;
 
     } catch (MalformedURLException e) {
         e.printStackTrace();
     } catch (IOException e) {
         e.printStackTrace();
     }
+	return null;
 	}
 }
