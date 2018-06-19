@@ -217,13 +217,10 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long> {
 	}
 
 	@Override
-	protected List<PreparedStatement> criarStatementsRemoverComRelacionamento(Connection conexao, Long id)
+	protected List<PreparedStatement> criarStatementsRemoverComRelacionamento(Connection conexao, Colaborador objeto)
 			throws Exception {
 		List<PreparedStatement> statements = new ArrayList<>();
-		PreparedStatement statement = null;
-		Colaborador objeto = null;
-		objeto = buscar(id);
-		
+		PreparedStatement statement = null;		
 		if(objeto != null) {
 
 		statement = conexao.prepareStatement("DELETE TELEFONE WHERE ID_COLABORADOR = ?", Statement.RETURN_GENERATED_KEYS);

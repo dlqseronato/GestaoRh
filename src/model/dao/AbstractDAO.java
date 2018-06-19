@@ -234,25 +234,27 @@ public abstract class AbstractDAO<T, U> implements IGenericDAO<T, U> {
 		List<PreparedStatement> statements = null;
 		ResultSet generatedKeys = null;
 		Exception ultimaExcecao = null;
+		T objeto = null;
+		objeto = buscar(id);
 		int n = 0;
 		try {
 			con = ConnectionFactory.getConnection();
-			statements = this.criarStatementsRemoverComRelacionamento(con, id);
+			statements = this.criarStatementsRemoverComRelacionamento(con, objeto);
 			
 			for(PreparedStatement statement : statements) {
 				try {
 					n += statement.executeUpdate();
+					con.commit();
 				} catch (SQLException e) {
 					ultimaExcecao = e;
 					e.printStackTrace();
+					con.rollback();
 				}
 			}
-			if(n == 5)
-				con.commit();
-			else {
-				con.rollback();
 
-			}
+
+
+
 
 		} catch (Exception e) {
 			ultimaExcecao = e;
@@ -418,7 +420,7 @@ public abstract class AbstractDAO<T, U> implements IGenericDAO<T, U> {
 	
 	protected abstract List<PreparedStatement> criarStatementsPersistirComRelacionamento(Connection conexao, T objeto) throws Exception;
 	
-	protected abstract List<PreparedStatement> criarStatementsRemoverComRelacionamento(Connection conexao, U id) throws Exception;
+	protected abstract List<PreparedStatement> criarStatementsRemoverComRelacionamento(Connection conexao, T objeto) throws Exception;
 
 	protected abstract PreparedStatement criarStatementAtualizar(Connection conexao, T objeto) throws Exception;
 

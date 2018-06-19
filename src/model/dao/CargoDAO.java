@@ -95,7 +95,7 @@ public class CargoDAO extends AbstractDAO<Cargo, Long> {
 	}
 
 	@Override
-	protected List<PreparedStatement> criarStatementsRemoverComRelacionamento(Connection conexao, Long id)
+	protected List<PreparedStatement> criarStatementsRemoverComRelacionamento(Connection conexao, Cargo objeto)
 			throws Exception {
 		// TODO Auto-generated method stub
 		return null;
