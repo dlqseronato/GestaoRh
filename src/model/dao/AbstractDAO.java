@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import model.entites.Colaborador;
+
 public abstract class AbstractDAO<T, U> implements IGenericDAO<T, U> {
 
 	@Override
@@ -225,6 +227,186 @@ public abstract class AbstractDAO<T, U> implements IGenericDAO<T, U> {
 		if (ultimaExcecao != null)
 			throw ultimaExcecao;
 	}
+	
+	@Override
+	public void removerComRelacionamentos(U id) throws Exception {
+		Connection con = null;
+		List<PreparedStatement> statements = null;
+		ResultSet generatedKeys = null;
+		Exception ultimaExcecao = null;
+		int n = 0;
+		try {
+			con = ConnectionFactory.getConnection();
+			statements = this.criarStatementsRemoverComRelacionamento(con, id);
+			
+			for(PreparedStatement statement : statements) {
+				try {
+					n += statement.executeUpdate();
+				} catch (SQLException e) {
+					ultimaExcecao = e;
+					e.printStackTrace();
+				}
+			}
+			if(n == 5)
+				con.commit();
+			else {
+				con.rollback();
+
+			}
+
+		} catch (Exception e) {
+			ultimaExcecao = e;
+			e.printStackTrace();
+		} finally {
+			try {
+				if (generatedKeys != null)
+					generatedKeys.close();
+			} catch (SQLException e) {
+				ultimaExcecao = e;
+			}
+			try {
+				if (statements != null)
+					for(PreparedStatement statement : statements) {
+						try {
+							statement.close();
+						} catch (SQLException e) {
+							ultimaExcecao = e;
+						}catch (Exception e) {
+							ultimaExcecao = e;
+						}
+					}
+					
+			} catch (Exception e) {
+				ultimaExcecao = e;
+			}
+			try {
+				if (con != null) {
+					con.rollback();
+					con.close();
+				}
+			} catch (Exception e) {
+				ultimaExcecao = e;
+			}
+		}
+		if (ultimaExcecao != null)
+			throw ultimaExcecao;		
+	}
+	
+	@Override
+	public void persistirComRelacionamento(T objeto) throws Exception {
+		Connection con = null;
+		List<PreparedStatement> statements = null;
+		ResultSet generatedKeys = null;
+		Exception ultimaExcecao = null;
+		int n = 0;
+		try {
+			con = ConnectionFactory.getConnection();
+			statements = this.criarStatementsPersistirComRelacionamento(con, objeto);
+			
+			for(PreparedStatement statement : statements) {
+				try {
+					n += statement.executeUpdate();
+				} catch (SQLException e) {
+					ultimaExcecao = e;
+				}
+			}
+			if(n == 5)
+				con.commit();
+			else {
+				con.rollback();
+			}
+		} catch (Exception e) {
+			ultimaExcecao = e;
+			e.printStackTrace();
+		} finally {
+			try {
+				if (generatedKeys != null)
+					generatedKeys.close();
+			} catch (SQLException e) {
+				ultimaExcecao = e;
+			}
+			try {
+				if (statements != null)
+					for(PreparedStatement statement : statements) {
+						try {
+							statement.close();
+						} catch (SQLException e) {
+							ultimaExcecao = e;
+						}catch (Exception e) {
+							ultimaExcecao = e;
+						}
+					}
+					
+			} catch (Exception e) {
+				ultimaExcecao = e;
+			}
+			try {
+				if (con != null) {
+					con.rollback();
+					con.close();
+				}
+			} catch (Exception e) {
+				ultimaExcecao = e;
+			}
+		}
+		if (ultimaExcecao != null)
+			throw ultimaExcecao;		
+	}
+	
+
+	@Override
+	public long buscarProximoIdSequence(String sequence) throws Exception {
+		Connection con = null;
+		PreparedStatement statement = null;
+		ResultSet rs = null;
+		long retorno = 0;
+		Exception ultimaExcecao = null;
+
+		try {
+			con = ConnectionFactory.getConnection();
+			statement = this.criarStatementBuscaSequence(con, sequence);
+			rs = statement.executeQuery();
+
+			if (rs.next())
+			{
+				retorno = Long.parseLong(rs.getString(1));
+				System.out.println(rs.getString(1));
+			}
+				
+			return retorno;
+		} catch (Exception e) {
+			ultimaExcecao = e;
+		} finally {
+			try {
+				if (rs != null)
+					rs.close();
+			} catch (SQLException e) {
+				ultimaExcecao = e;
+			}
+			try {
+				if (statement != null)
+					statement.close();
+			} catch (Exception e) {
+				ultimaExcecao = e;
+			}
+			try {
+				if (con != null)
+					con.close();
+			} catch (Exception e) {
+				ultimaExcecao = e;
+			}
+		}
+
+		throw ultimaExcecao;
+	}
+
+	@Override
+	public PreparedStatement criarStatementBuscaSequence(Connection conexao, String sequence) throws Exception{
+		PreparedStatement statement = conexao
+				.prepareStatement("SELECT "+sequence+" FROM DUAL");
+
+		return statement;
+	}
 
 	protected abstract PreparedStatement criarStatementBuscar(Connection conexao, U id) throws Exception;
 
@@ -233,6 +415,10 @@ public abstract class AbstractDAO<T, U> implements IGenericDAO<T, U> {
 	protected abstract void carregarChavesGeradasNoObjeto(ResultSet generatedKeys, T objeto) throws Exception;
 
 	protected abstract PreparedStatement criarStatementPersistir(Connection conexao, T objeto) throws Exception;
+	
+	protected abstract List<PreparedStatement> criarStatementsPersistirComRelacionamento(Connection conexao, T objeto) throws Exception;
+	
+	protected abstract List<PreparedStatement> criarStatementsRemoverComRelacionamento(Connection conexao, U id) throws Exception;
 
 	protected abstract PreparedStatement criarStatementAtualizar(Connection conexao, T objeto) throws Exception;
 

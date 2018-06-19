@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.List;
+
 import model.entites.Cargo;
 
 
@@ -78,6 +80,29 @@ public class CargoDAO extends AbstractDAO<Cargo, Long> {
 	public void removerComRelacionamentos(Long id) throws Exception {
 		remover(id);
 	}
+
+	@Override
+	protected List<PreparedStatement> criarStatementsPersistirComRelacionamento(Connection conexao, Cargo objeto)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void persistirComRelacionamento(Cargo objeto) throws Exception {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected List<PreparedStatement> criarStatementsRemoverComRelacionamento(Connection conexao, Long id)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
 
 
 }
