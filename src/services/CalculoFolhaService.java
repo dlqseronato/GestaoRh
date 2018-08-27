@@ -42,21 +42,19 @@ public class CalculoFolhaService {
         for(Date data :ponto.getRegistros()) {
         	String fdata = sdf.format(data);
         	int d = Integer.parseInt(fdata);
-        	if(d == mes) {
-        		
-        	}
+        	
         }
           
 
         con.disconnect();
         
-        return ponto;
+        return 0;
 
     } catch (MalformedURLException e) {
         e.printStackTrace();
     } catch (IOException e) {
         e.printStackTrace();
     }
-	return null;
+	return 0;
 	}
 }

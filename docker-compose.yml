@@ -1,0 +1,26 @@
+version: '3.6'
+
+services:
+	db:
+	    image: mysql:5.7
+	    environment:
+	      MYSQL_RANDOM_ROOT_PASSWORD: Kindor*123
+	      MYSQL_DATABASE: POLYGON_OWNER
+	      MYSQL_USER: POLYGON_OWNER
+	      MYSQL_PASSWORD: king*123
+	    restart: always
+	    ports:
+	      - 55003:3306
+	java-ws: 
+	    ports: 
+	      - 55005:8080
+	    build:
+	      context: .
+	      dockerfile: Dockerfile
+	    depends_on:
+	      - db
+	    networks: 
+	      - backing-services
+networks:
+	backing-services:
+    	driver: bridge

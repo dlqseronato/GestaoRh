@@ -3,18 +3,19 @@ package services;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import model.dao.AbstractDAO;
+import dao.AbstractDAO;
 import model.dao.ColaboradorDAO;
+import model.dao.ConnectionNames;
 import model.entites.Colaborador;
 import model.utils.Serializer;
 
 
 @WebServlet("/ColaboradorService")
-public class ColaboradorService extends Service<Colaborador, Long> {
+public class ColaboradorService extends Service<Colaborador, Long, String> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected AbstractDAO<Colaborador, Long> createDao() {
+	protected AbstractDAO<Colaborador, Long, String> createDao() {
 		return new ColaboradorDAO();
 	}
 
@@ -32,5 +33,10 @@ public class ColaboradorService extends Service<Colaborador, Long> {
 	@Override
 	protected String parseActionFromParams(HttpServletRequest request) {
 		return request.getParameter("action");
+	}
+
+	@Override
+	protected String getConnName() {
+		return ConnectionNames.POLYGON.getConnName();
 	}
 }

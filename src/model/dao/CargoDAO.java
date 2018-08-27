@@ -3,106 +3,87 @@ package model.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 import java.util.List;
-
+import com.mysql.jdbc.Statement;
+import dao.AbstractDAO;
 import model.entites.Cargo;
+import util.QueryWarehouse;
 
 
 
-public class CargoDAO extends AbstractDAO<Cargo, Long> {
+public class CargoDAO extends AbstractDAO<Cargo, Long,String> {
 
 	@Override
-	protected PreparedStatement criarStatementListar(Connection conexao) throws Exception {
-		String sql = "SELECT * FROM CARGO";
-		return conexao.prepareStatement(sql);
+	protected PreparedStatement createStatementFind(Connection conn, Long id) throws Exception {
+		String sql = QueryWarehouse.getQuery(this.getClass(),"polygonFindCargoById");
+		return conn.prepareStatement(sql);
 	}
 
 	@Override
-	protected Cargo parseObjeto(ResultSet rs) throws Exception {
-		Cargo a = new Cargo(
-						rs.getLong("ID"),
-						rs.getString("NOME"),
-						rs.getString("DESCRICAO"),
-						rs.getLong("NIVEL"),
-						rs.getDouble("VALOR_BASE_HORA")
-						)
-				;
+	protected PreparedStatement createStatementList(Connection conn) throws Exception {
+		String sql = QueryWarehouse.getQuery(this.getClass(),"polygonFindCargoById");
+		return conn.prepareStatement(sql);
+	}
 
+	@Override
+	protected PreparedStatement createStatementRemove(Connection conn, Long id) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected PreparedStatement createStatementSave(Connection conn, Cargo c, int nextId) throws Exception {
+		PreparedStatement statement = conn.prepareStatement("INSERT INTO CARGO (ID,NOME,DESCRICAO,NIVEL,VALOR_BASE_HORA) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+		statement.setInt(1, nextId);
+		statement.setString(2, c.getNome());
+		statement.setString(3, c.getDescricao());
+		statement.setLong(4, c.getNivel());
+		statement.setDouble(5, c.getValorBaseHora());
+		return statement;
+	}
+
+	@Override
+	protected PreparedStatement createStatementUpdate(Connection conn, Cargo c) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected List<PreparedStatement> createStatementsRemoveRelacionated(Connection conn, Cargo c) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected List<PreparedStatement> createStatementsSaveRelacionated(Connection conn, Cargo c) throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected Cargo parseObject(ResultSet rs) throws Exception {
+		Cargo a = new Cargo(
+				rs.getLong("ID"),
+				rs.getString("NOME"),
+				rs.getString("DESCRICAO"),
+				rs.getLong("NIVEL"),
+				rs.getDouble("VALOR_BASE_HORA")
+				)
+				;
 		return a;
 	}
-	
-	@Override
-	protected PreparedStatement criarStatementRemover(Connection conexao, Long id) throws Exception {
-		PreparedStatement statement= conexao.prepareStatement("DELETE FROM CARGO WHERE id=?");
-		statement.setLong(1, id);
-		return statement;
-	}
 
 	@Override
-	protected PreparedStatement criarStatementAtualizar(Connection conexao, Cargo objeto) throws Exception {
-		PreparedStatement statement = conexao
-				.prepareStatement("UPDATE CARGO SET NOME=?, DESCRICAO=?, NIVEL =?, VALOR_BASE_HORA=? WHERE ID =?");
-		statement.setString(1, objeto.getNome());
-		statement.setString(2, objeto.getDescricao());
-		statement.setLong(3, objeto.getNivel());
-		statement.setDouble(4, objeto.getValorBaseHora());
-		statement.setLong(5, objeto.getId());
-
-		return statement;
-	}
-
-	@Override
-	protected void carregarChavesGeradasNoObjeto(ResultSet generatedKeys, Cargo objeto) throws Exception {
-		objeto.setId(generatedKeys.getLong(1));
-	}
-
-	@Override
-	protected PreparedStatement criarStatementPersistir(Connection conexao, Cargo objeto) throws Exception {
-		PreparedStatement statement = conexao.prepareStatement("INSERT INTO CARGO (ID,NOME,DESCRICAO,NIVEL,VALOR_BASE_HORA) VALUES (SEQ_CARGO.NEXTVAL,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-		statement.setString(1, objeto.getNome());
-		statement.setString(2, objeto.getDescricao());
-		statement.setLong(3, objeto.getNivel());
-		statement.setDouble(4, objeto.getValorBaseHora());
-	
-		return statement;
-	}
-
-	@Override
-	protected PreparedStatement criarStatementBuscar(Connection conexao, Long id) throws Exception {
-		PreparedStatement statement = conexao
-				.prepareStatement("SELECT * FROM CARGO WHERE ID = ?");
-		statement.setLong(1, id);
-		return statement;
-	}
-	
-	@Override
-	public void removerComRelacionamentos(Long id) throws Exception {
-		remover(id);
-	}
-
-	@Override
-	protected List<PreparedStatement> criarStatementsPersistirComRelacionamento(Connection conexao, Cargo objeto)
-			throws Exception {
+	protected PreparedStatement createStatementFindNextId(Connection arg0) throws Exception {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void persistirComRelacionamento(Cargo objeto) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected List<PreparedStatement> criarStatementsRemoverComRelacionamento(Connection conexao, Cargo objeto)
-			throws Exception {
+	public Connection getCustomConnection(String connName) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-
-
 
 
 }

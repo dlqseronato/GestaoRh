@@ -3,18 +3,19 @@ package services;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import model.dao.AbstractDAO;
+import dao.AbstractDAO;
 import model.dao.CargoDAO;
+import model.dao.ConnectionNames;
 import model.entites.Cargo;
 import model.utils.Serializer;
 
 
 @WebServlet("/CargoService")
-public class CargoService extends Service<Cargo, Long> {
+public class CargoService extends Service<Cargo, Long, String> {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	protected AbstractDAO<Cargo, Long> createDao() {
+	protected AbstractDAO<Cargo, Long,String> createDao() {
 		return new CargoDAO();
 	}
 
@@ -32,5 +33,10 @@ public class CargoService extends Service<Cargo, Long> {
 	@Override
 	protected String parseActionFromParams(HttpServletRequest request) {
 		return request.getParameter("action");
+	}
+
+	@Override
+	protected String getConnName() {
+		return ConnectionNames.POLYGON.getConnName();
 	}
 }

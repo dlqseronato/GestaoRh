@@ -1,30 +1,140 @@
 package model.dao;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
+import com.mysql.jdbc.Statement;
+
+import dao.AbstractDAO;
 import model.entites.Cargo;
 import model.entites.Colaborador;
 import model.entites.ContaBancaria;
 import model.entites.Endereco;
 import model.entites.Telefone;
+import util.QueryWarehouse;
 
-
-public class ColaboradorDAO extends AbstractDAO<Colaborador, Long> {
+public class ColaboradorDAO extends AbstractDAO<Colaborador, Long, String> {
 
 	@Override
-	protected PreparedStatement criarStatementListar(Connection conexao) throws Exception {
-		String sql = "SELECT * FROM DADOS_COLABORADORES";
-		return conexao.prepareStatement(sql);
+	protected PreparedStatement createStatementFind(Connection conn, Long id) throws Exception {
+		PreparedStatement statement = conn.prepareStatement("SELECT * FROM POLYGON_OWNER.DADOS_COLABORADORES WHERE ID = ?");
+		statement.setLong(1, id);
+		return statement;
 	}
 
 	@Override
-	protected Colaborador parseObjeto(ResultSet rs) throws Exception {
+	protected PreparedStatement createStatementList(Connection conn) throws Exception {
+		String sql = "SELECT * FROM POLYGON_OWNER.DADOS_COLABORADORES";
+		return conn.prepareStatement(sql);
+	}
+
+	@Override
+	protected PreparedStatement createStatementRemove(Connection conn, Long id) throws Exception {
+		String sql = "SELECT * FROM POLYGON_OWNER.COLABORADOR";
+		return conn.prepareStatement(sql);
+	}
+
+	@Override
+	protected PreparedStatement createStatementSave(Connection conn, Colaborador c, int nextId) throws Exception {
+		PreparedStatement statement = conn.prepareStatement("INSERT INTO POLYGON_OWNER.COLABORADOR (ID,NOME,CPF,DT_NASCIMENTO, GENERO, EMAIL,CTPS_NUM,PIS_PASEP,ID_CONTA_BANCARIA, ID_ENDERECO, ID_CARGO) VALUES (?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+		statement.setInt(1, nextId);
+		statement.setString(2, c.getNome());
+		statement.setLong(3, c.getCpf());
+		if (c.getDtNascimento() != null)
+			statement.setDate(4, c.getDtNascimento());
+		else
+			statement.setString(4,null); 	
+		statement.setString(5, c.getGenero());
+		statement.setString(6, c.getEmail());
+		statement.setLong(7, c.getCtpsNum());
+		statement.setLong(8, c.getPisPasep());
+		try {
+			statement.setLong(9, c.getConta().getId());
+			statement.setLong(10, c.getEndereco().getId());
+			statement.setLong(11, c.getCargo().getId());
+		}catch (Exception e) {
+			statement.setLong(9, 0);
+			statement.setLong(10, 0);
+			statement.setLong(11, 0);
+		}
 		
+		return statement;
+	}
+
+	@Override
+	protected PreparedStatement createStatementUpdate(Connection conn, Colaborador c) throws Exception {
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+		PreparedStatement statement = conn.prepareStatement("UPDATE POLYGON_OWNER.COLABORADOR SET NOME = ?, CPF = ?, DT_NASCIMENTO = ?, GENERO = ?, EMAIL = ?, CTPS_NUM = ?, PIS_PASEP = ?, ID_CONTA_BANCARIA = ?, ID_ENDERECO = ?, ID_CARGO = ? WHERE ID = ?");
+		statement.setString(1, c.getNome());
+		statement.setLong(2, c.getCpf());
+		if (c.getDtNascimento() != null)
+			statement.setDate(3,c.getDtNascimento());
+		else
+			statement.setString(3,dateFormat.format(new Date(System.currentTimeMillis()))); 	
+		statement.setString(4, c.getGenero());
+		statement.setString(5, c.getEmail());
+		statement.setLong(6, c.getCtpsNum());
+		statement.setLong(7, c.getPisPasep());
+		try {
+			statement.setLong(8, c.getConta().getId());
+			statement.setLong(9, c.getEndereco().getId());
+			statement.setLong(10, c.getCargo().getId());
+		}catch (Exception e) {
+			statement.setLong(8, 0);
+			statement.setLong(9, 0);
+			statement.setLong(10, 0);
+		}
+		statement.setLong(11, c.getId());
+		
+ 		return statement;
+	}
+
+	@Override
+	protected List<PreparedStatement> createStatementsRemoveRelacionated(Connection conn, Colaborador c)
+			throws Exception {
+		List<PreparedStatement> statements = new ArrayList<>();
+	
+		if(c != null) {
+
+		PreparedStatement stTelefone  = conn.prepareStatement("DELETE FROM POLYGON_OWNER.TELEFONE WHERE ID_COLABORADOR = ?");
+		stTelefone.setLong(1, c.getId());
+		statements.add(stTelefone);	
+		
+		PreparedStatement stColaborador = conn.prepareStatement("DELETE FROM POLYGON_OWNER.COLABORADOR WHERE ID = ?");
+		stColaborador.setLong(1, c.getId());
+		statements.add(stColaborador);	
+		
+	}
+
+		
+		return statements; 
+	}
+
+	@Override
+	protected List<PreparedStatement> createStatementsSaveRelacionated(Connection conn, Colaborador c)
+			throws Exception {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+
+	@Override
+	protected PreparedStatement createStatementFindNextId(Connection conn) throws Exception {
+		String sql = "SELECT IFNULL(MAX(ID)+1,1) FROM POLYGON_OWNER.COLABORADOR";
+		return conn.prepareStatement(sql);
+	}
+
+	@Override
+	protected Colaborador parseObject(ResultSet rs) throws Exception {
 		Colaborador a = new Colaborador(
 				rs.getLong("ID"),
 				rs.getString("NOME"),
@@ -65,198 +175,14 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long> {
 						)
 				,0
 				);
-/*
-		Colaborador a = new Colaborador(
-				rs.getLong("ID"),
-				rs.getString("NOME"),
-				rs.getLong("CPF"),
-				rs.getDate("DT_NASCIMENTO"),
-				rs.getString("GENERO"),
-				rs.getString("EMAIL"),
-				rs.getLong("CTPS_NUM"),
-				rs.getLong("PIS_PASEP"));
-				*/
+		a.setNewSalarioAtual();
 		return a;
 	}
-	
-	@Override
-	protected PreparedStatement criarStatementRemover(Connection conexao, Long id) throws Exception {
-		PreparedStatement statement= conexao.prepareStatement("DELETE FROM COLABORADOR WHERE ID=?");
-		statement.setLong(1, id);
-		return statement;
-	}
 
 	@Override
-	protected PreparedStatement criarStatementAtualizar(Connection conexao, Colaborador objeto) throws Exception {
-		PreparedStatement statement = conexao
-				.prepareStatement("UPDATE animal SET nome=?, nascimento=?,especie_id=? WHERE id=?");
-		statement.setString(1, objeto.getNome());
-		if (objeto.getDtNascimento() != null)
-			statement.setDate(2, new java.sql.Date(objeto.getDtNascimento().getTime()));
-		else
-			statement.setNull(2, java.sql.Types.DATE);
-		
-
-		return statement;
+	public Connection getCustomConnection(String connName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
-
-	@Override
-	protected void carregarChavesGeradasNoObjeto(ResultSet generatedKeys, Colaborador objeto) throws Exception {
-		objeto.setId(generatedKeys.getLong(1));
-	}
-
-	@Override
-	protected PreparedStatement criarStatementPersistir(Connection conexao, Colaborador objeto) throws Exception {
-		PreparedStatement statement = conexao.prepareStatement("INSERT INTO COLABORADOR (ID,NOME,CPF,DT_NASCIMENTO, GENERO, EMAIL,CTPS_NUM,PIS_PASEP,ID_CONTA_BANCARIA, ID_ENDERECO, ID_CARGO) VALUES (SEQ_COLABORADOR.NEXTVAL,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-		statement.setString(1, objeto.getNome());
-		statement.setLong(2, objeto.getCpf());
-		if (objeto.getDtNascimento() != null)
-			statement.setDate(3, objeto.getDtNascimento());
-		else
-			statement.setString(3,"");
-		statement.setString(4, objeto.getGenero());
-		statement.setString(5, objeto.getEmail());
-		statement.setLong(6, objeto.getCtpsNum());
-		statement.setLong(7, objeto.getPisPasep());
-		statement.setLong(8, 1000);
-		statement.setLong(9, 1002);
-		try {
-			statement.setLong(8, objeto.getConta().getId());
-			statement.setLong(9, objeto.getEndereco().getId());
-			statement.setLong(10, objeto.getCargo().getId());
-		}catch (Exception e) {
-			statement.setLong(8, 0);
-			statement.setLong(9, 0);
-			statement.setLong(10, 0);
-		}
-		
-		return statement;
-	
-	}
-
-	@Override
-	protected PreparedStatement criarStatementBuscar(Connection conexao, Long cpf) throws Exception {
-		PreparedStatement statement = conexao
-				.prepareStatement("SELECT * FROM DADOS_COLABORADORES WHERE ID = ?");
-		statement.setLong(1, cpf);
-		return statement;
-	}
-	
-
-
-	@Override
-	protected List<PreparedStatement> criarStatementsPersistirComRelacionamento(Connection conexao, Colaborador objeto)
-			throws Exception {
-		List<PreparedStatement> statements = new ArrayList<>();
-		PreparedStatement statement = null;
-		objeto.getCargo().setId(buscarProximoIdSequence("SEQ_CARGO.NEXTVAL"));
-		statement = conexao.prepareStatement("INSERT INTO CARGO (ID,NOME,DESCRICAO,NIVEL,VALOR_BASE_HORA) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-		statement.setLong(1, objeto.getCargo().getId());
-		statement.setString(2, objeto.getCargo().getNome());
-		statement.setString(3, objeto.getCargo().getDescricao());
-		statement.setLong(4, objeto.getCargo().getNivel());
-		statement.setDouble(5, objeto.getCargo().getValorBaseHora());		
-		statements.add(statement);	
-		statement = null;
-		
-		objeto.getConta().setId(buscarProximoIdSequence("SEQ_CONTA_BANCARIA.NEXTVAL"));
-		statement = conexao.prepareStatement("INSERT INTO CONTA_BANCARIA  (ID,BANCO,AGENCIA,CONTA,TIPO) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-		statement.setLong(1, objeto.getConta().getId());
-		statement.setLong(2, objeto.getConta().getBanco());
-		statement.setLong(3, objeto.getConta().getAgencia());
-		statement.setLong(4, objeto.getConta().getConta());
-		statement.setLong(5, objeto.getConta().getTipo());		
-		statements.add(statement);	
-		statement = null;
-		
-		objeto.getEndereco().setId(buscarProximoIdSequence("SEQ_ENDERECO.NEXTVAL"));
-		statement = conexao.prepareStatement("INSERT INTO ENDERECO (ID,RUA,NUMERO,CEP,ESTADO,PAIS) VALUES (?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-		statement.setLong(1, objeto.getEndereco().getId());
-		statement.setString(2, objeto.getEndereco().getRua());
-		statement.setLong(3, objeto.getEndereco().getNumero());
-		statement.setLong(4, objeto.getEndereco().getCep());
-		statement.setString(5, objeto.getEndereco().getEstado());
-		statement.setString(6, objeto.getEndereco().getPais());		
-		statements.add(statement);	
-		statement = null;
-		
-		objeto.setId(buscarProximoIdSequence("SEQ_COLABORADOR.NEXTVAL"));
-		statement = conexao.prepareStatement("INSERT INTO COLABORADOR (ID,NOME,CPF,DT_NASCIMENTO, GENERO, EMAIL,CTPS_NUM,PIS_PASEP,ID_CONTA_BANCARIA, ID_ENDERECO, ID_CARGO) VALUES (?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-		statement.setLong(1, objeto.getId());
-		statement.setString(2, objeto.getNome());
-		statement.setLong(3, objeto.getCpf());
-		if (objeto.getDtNascimento() != null)
-			statement.setDate(4, objeto.getDtNascimento());
-		else
-			statement.setString(4,"");
-		statement.setString(5, objeto.getGenero());
-		statement.setString(6, objeto.getEmail());
-		statement.setLong(7, objeto.getCtpsNum());
-		statement.setLong(8, objeto.getPisPasep());
-		try {
-			statement.setLong(9, objeto.getConta().getId());
-			statement.setLong(10, objeto.getEndereco().getId());
-			statement.setLong(11, objeto.getCargo().getId());
-		}catch (Exception e) {
-			statement.setLong(9, 0);
-			statement.setLong(10, 0);
-			statement.setLong(11, 0);
-		}
-		statements.add(statement);
-		statement = null;
-		objeto.getTelefone().setId(buscarProximoIdSequence("SEQ_TELEFONE.NEXTVAL"));
-		statement = conexao.prepareStatement("INSERT INTO TELEFONE (ID, ID_COLABORADOR,PREFIXO,NUMERO,TIPO) VALUES (?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
-		statement.setLong(1, objeto.getTelefone().getId());
-		statement.setLong(2, objeto.getId());
-		statement.setLong(3, objeto.getTelefone().getPrefixo());
-		statement.setLong(4, objeto.getTelefone().getNumero());
-		statement.setDouble(5, objeto.getTelefone().getTipo());		
-		statements.add(statement);	
-		statement = null;
-		
-		return statements; 
-	}
-
-	@Override
-	protected List<PreparedStatement> criarStatementsRemoverComRelacionamento(Connection conexao, Colaborador objeto)
-			throws Exception {
-		List<PreparedStatement> statements = new ArrayList<>();
-		PreparedStatement statement = null;		
-		if(objeto != null) {
-
-		statement = conexao.prepareStatement("DELETE TELEFONE WHERE ID_COLABORADOR = ?", Statement.RETURN_GENERATED_KEYS);
-		statement.setLong(1, objeto.getId());
-		statements.add(statement);	
-		statement = null;	
-		
-		statement = conexao.prepareStatement("DELETE COLABORADOR WHERE ID = ?", Statement.RETURN_GENERATED_KEYS);
-		statement.setLong(1, objeto.getId());
-		statements.add(statement);	
-		statement = null;	
-		
-
-		statement = conexao.prepareStatement("DELETE CARGO WHERE ID = ?", Statement.RETURN_GENERATED_KEYS);
-		statement.setLong(1, objeto.getCargo().getId());	
-		statements.add(statement);	
-		statement = null;
-		
-
-		statement = conexao.prepareStatement("DELETE CONTA_BANCARIA WHERE ID = ?", Statement.RETURN_GENERATED_KEYS);
-		statement.setLong(1, objeto.getConta().getId());
-		statements.add(statement);	
-		statement = null;
-		
-		statement = conexao.prepareStatement("DELETE ENDERECO WHERE ID = ?", Statement.RETURN_GENERATED_KEYS);
-		statement.setLong(1, objeto.getEndereco().getId());
-		statements.add(statement);	
-		statement = null;
-	}
-
-		
-		return statements; 
-	}
-
-
-
 
 }
