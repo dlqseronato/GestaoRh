@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import dao.AbstractDAO;
 import model.dao.ConnectionNames;
 import model.utils.Serializer;
+import util.Log;
 
 public abstract class Service<T, U, V> extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -29,6 +30,7 @@ public abstract class Service<T, U, V> extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
+			Log.info("Triste");
 			AbstractDAO<T, U, V> dao = createDao();
 			String action = parseActionFromParams(request);
 			if (action == null || action.equals("getAll")) {
@@ -43,7 +45,8 @@ public abstract class Service<T, U, V> extends HttpServlet {
 			}
 
 		} catch (Exception e) {
-			internalServerError(response, "Houve um problema ao listar os objetos.");
+			e.printStackTrace();
+			internalServerError(response, "Houve um problema ao listar os objetos."+e.getLocalizedMessage());
 		}
 	}
 
@@ -64,6 +67,7 @@ public abstract class Service<T, U, V> extends HttpServlet {
 			}
 
 		} catch (Exception e) {
+			e.printStackTrace();
  			internalServerError(response, "Houve um problema ao criar o objeto.");
 		}
 	}
@@ -86,6 +90,7 @@ public abstract class Service<T, U, V> extends HttpServlet {
 			;
 			ok(response);
 		} catch (Exception e) {
+			e.printStackTrace();
 			internalServerError(response, "Houve um erro ao remover objeto.");
 		}
 	}
