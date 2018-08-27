@@ -179,10 +179,5 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long, String> {
 		return a;
 	}
 
-	@Override
-	public Connection getCustomConnection(String connName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 }

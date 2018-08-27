@@ -79,11 +79,6 @@ public class CargoDAO extends AbstractDAO<Cargo, Long,String> {
 		return null;
 	}
 
-	@Override
-	public Connection getCustomConnection(String connName) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 
 }

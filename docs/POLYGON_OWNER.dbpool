@@ -1,0 +1,4 @@
+pool.driver=com.mysql.jdbc.Driver
+pool.url=jdbc:mysql://localhost:3306/polygon_owner
+pool.user=POLYGON_OWNER
+pool.password=Kindor*123
