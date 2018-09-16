@@ -30,7 +30,6 @@ public abstract class Service<T, U, V> extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			Log.info("Triste");
 			AbstractDAO<T, U, V> dao = createDao();
 			String action = parseActionFromParams(request);
 			if (action == null || action.equals("getAll")) {
