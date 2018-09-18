@@ -1,11 +1,16 @@
 package message;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.catalina.tribes.MessageListener;
 
 import com.rabbitmq.client.AMQP;
 import com.rabbitmq.client.Channel;
@@ -36,12 +41,13 @@ public class PontoMessageResponse  {
 	    class RemindTask extends TimerTask {
 	        public void run() {
 	        	 ConnectionFactory factory = new ConnectionFactory();
-	        	 factory.setHost(HOST_POLYGON);
-	        	 Connection connection;
 				try {
+					factory.setUri(HOST_POLYGON);
+		        	Connection connection;
 					connection = factory.newConnection();
 		        	Channel channel = connection.createChannel();
-		        	channel.queueDeclare(QUE_POLYGON_OUTPUT, false, false, false, null);
+		        	channel.queueDeclare(QUE_POLYGON_OUTPUT, true, false, false, null);
+		        	
 		            Consumer consumer = new DefaultConsumer(channel) {
 		                @Override
 		                public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body)
@@ -59,6 +65,15 @@ public class PontoMessageResponse  {
 		        
 				} catch (IOException | TimeoutException e) {
 					e.printStackTrace();
+				} catch (KeyManagementException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (NoSuchAlgorithmException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				} catch (URISyntaxException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
 				}
 
 	            timer.cancel(); 

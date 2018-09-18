@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import dao.AbstractDAO;
 import message.PontoMessageRequest;
 import model.dao.ConnectionNames;
+import model.entites.Colaborador;
+import model.entites.ColaboradorPontoOut;
 import model.utils.Serializer;
 import util.Log;
 
@@ -36,15 +38,19 @@ public abstract class Service<T, U, V> extends HttpServlet {
 			if (action == null || action.equals("getAll")) {
 				List<T> objects = dao.list(getConnName());
 				String serializedObjects = new Serializer().serialize(objects);
-				PontoMessageRequest p =new PontoMessageRequest();
-				p.sendPontoMessageRequest(serializedObjects);;
+				PontoMessageRequest p = new PontoMessageRequest();
+				for(Colaborador c : (List<Colaborador>)objects) {
+					ColaboradorPontoOut colaborador = new ColaboradorPontoOut(c);
+					String serializedObjects2 = new Serializer().serialize(colaborador);
+					p.sendPontoMessageRequest(serializedObjects2);
+				}
 				ok(response, serializedObjects);
 			} else if (action.equals("get")) {
 				U primaryKey = parsePrimaryKeyFromParams(request);
 				T object = dao.find(getConnName(), primaryKey);
 				String serializedObjects = new Serializer().serialize(object);
-				PontoMessageRequest p =new PontoMessageRequest();
-				p.sendPontoMessageRequest(serializedObjects);;
+				//PontoMessageRequest p = new PontoMessageRequest();
+				//p.sendPontoMessageRequest(serializedObjects);;
 				ok(response, serializedObjects);
 			}
 

@@ -8,53 +8,82 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
+import dao.AbstractDAO;
+import message.PontoMessageRequest;
+import model.dao.CargoDAO;
+import model.dao.ConnectionNames;
+import model.entites.Cargo;
+import model.entites.Colaborador;
+import model.entites.ColaboradorPontoOut;
 import model.entites.PontoColaborador;
+import model.utils.Serializer;
 
 
 
-public class CalculoFolhaService {
+public class CalculoFolhaService extends Service<ColaboradorPontoOut, Long, String> {
 	private static int HTTP_COD_SUCESSO = 200;
+	private static double horaCalculada;
 	
-	public static double calculoSalario(long matricula, double valorHoraAtual,double horas) throws JAXBException {
-		 
-	try {
-		 
-        URL url = new URL("http://localhost:8080/musicApp/banda/get");
-        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+	//public static double calculoSalario(long matricula, double valorHoraAtual,double horas) throws JAXBException {
+	public static double calculoSalario(Colaborador c) throws JAXBException {
+		PontoMessageRequest p = new PontoMessageRequest();
+		ColaboradorPontoOut colaborador = new ColaboradorPontoOut(c);
+		String serializedObject = new Serializer().serialize(colaborador);
+		try {
+			p.sendPontoMessageRequest(serializedObject);
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+		return horaCalculada;
+	}
 
-        if (con.getResponseCode() != HTTP_COD_SUCESSO) {
-            throw new RuntimeException("HTTP error code : "+ con.getResponseCode());
-        }
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		try {
+			ColaboradorPontoOut c = parseEntityFromParams(request);
+			
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	protected AbstractDAO<ColaboradorPontoOut, Long, String> createDao() {
+		return null;
+	}
 
-        BufferedReader br = new BufferedReader(new InputStreamReader((con.getInputStream())));
-                     
-        JAXBContext jaxbContext = JAXBContext.newInstance(CalculoFolhaService.class);
+	@Override
+	protected ColaboradorPontoOut parseEntityFromParams(HttpServletRequest request) throws Exception {
+		Serializer serializer = new Serializer();
+		return serializer.desserialize(request.getReader(), ColaboradorPontoOut.class);
+	}
 
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-        PontoColaborador ponto = (PontoColaborador) jaxbUnmarshaller.unmarshal(br);
-         
-        SimpleDateFormat sdf = new SimpleDateFormat("MM");
-        for(Date data :ponto.getRegistros()) {
-        	String fdata = sdf.format(data);
-        	int d = Integer.parseInt(fdata);
-        	
-        }
-          
+	@Override
+	protected Long parsePrimaryKeyFromParams(HttpServletRequest request) {
+		return Long.parseLong(request.getParameter("id"));
+	}
+	
+	@Override
+	protected String parseActionFromParams(HttpServletRequest request) {
+		return request.getParameter("action");
+	}
 
-        con.disconnect();
-        
-        return 0;
-
-    } catch (MalformedURLException e) {
-        e.printStackTrace();
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-	return 0;
+	@Override
+	protected String getConnName() {
+		return ConnectionNames.POLYGON.getConnName();
 	}
 }

@@ -2,8 +2,10 @@ package model.dao;
 
 import java.sql.Connection;
 import java.sql.Date;
+import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,6 +15,7 @@ import java.util.List;
 import com.mysql.jdbc.Statement;
 
 import dao.AbstractDAO;
+import message.PontoMessageRequest;
 import model.entites.Cargo;
 import model.entites.Colaborador;
 import model.entites.ContaBancaria;
@@ -21,7 +24,26 @@ import model.entites.Telefone;
 import util.QueryWarehouse;
 
 public class ColaboradorDAO extends AbstractDAO<Colaborador, Long, String> {
-
+	
+	@Override
+	public Connection getConnectionCustom(String connName) {
+		String url = "jdbc:mysql://localhost/polygon_owner";
+		String user = "root";
+		
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			return DriverManager.getConnection(url, user, "");
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
 	@Override
 	protected PreparedStatement createStatementFind(Connection conn, Long id) throws Exception {
 		PreparedStatement statement = conn.prepareStatement("SELECT * FROM POLYGON_OWNER.DADOS_COLABORADORES WHERE ID = ?");

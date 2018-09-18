@@ -16,15 +16,20 @@ public class PontoMessageRequest  {
      private final String QUE_POLYGON_INPUT = "CalculosAProcessar";
 
 	 String json;
-	 public void sendPontoMessageRequest(String serializedObjects) {
+	 public void sendPontoMessageRequest(String serializedObjects) throws ClassNotFoundException {
+		 	Class.forName("org.slf4j.LoggerFactory");
 	    	ConnectionFactory factory = new ConnectionFactory();
         	Connection connection;
+        	Channel channel;
 			try {
 	        	factory.setUri(new URI(HOST_POLYGON));
 				connection = factory.newConnection();
-	        	Channel channel = connection.createChannel();
-	        	channel.queueDeclare(QUE_POLYGON_INPUT, false, false, false, null);
-	        	channel.basicPublish("", QUE_POLYGON_INPUT, null, json.getBytes());
+	        	channel = connection.createChannel();
+	        	channel.queueDeclare(QUE_POLYGON_INPUT, true, false, false, null);
+	        	channel.basicPublish("", QUE_POLYGON_INPUT, null, serializedObjects.getBytes());
+	        	
+	        	channel.close();
+	        	connection.close();
 			} catch (IOException | TimeoutException e) {
 				e.printStackTrace();
 			} catch (KeyManagementException e) {
