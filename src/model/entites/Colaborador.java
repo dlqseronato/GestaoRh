@@ -1,7 +1,6 @@
 package model.entites;
 
 import java.sql.Date;
-import java.text.DecimalFormat;
 
 
 public class Colaborador {
@@ -19,6 +18,7 @@ public class Colaborador {
 	private Endereco endereco;
 	private Cargo cargo;
 	private double salarioAtual;
+	private double horasTrabalhadas;
 
 	public Colaborador() {
 		super();
@@ -215,7 +215,7 @@ public class Colaborador {
 	}
 
 	public Colaborador(long id, String nome, long cpf, Date dtNascimento, String genero, String email, long ctpsNum,
-			long pisPasep, double salarioAtual) {
+			long pisPasep, double salarioAtual,double horasTrabalhadas) {
 		super();
 		this.conta = new ContaBancaria();
 		this.telefone = new Telefone();
@@ -230,6 +230,7 @@ public class Colaborador {
 		this.ctpsNum = ctpsNum;
 		this.pisPasep = pisPasep;
 		this.salarioAtual = salarioAtual;
+		this.horasTrabalhadas = horasTrabalhadas;
 	}
 
 	public double getSalarioAtual() {
@@ -241,8 +242,21 @@ public class Colaborador {
 	}
 
 	public void setNewSalarioAtual() {
-		if (cargo != null)
-			this.salarioAtual = Math.round(cargo.getValorBaseHora() * 220);
+		if (cargo != null) {
+			this.horasTrabalhadas = 180+(Math.random()*40);
+			this.salarioAtual = Math.round(cargo.getValorBaseHora() * horasTrabalhadas);
+		}
+			
 	}
+
+	public double getHorasTrabalhadas() {
+		return horasTrabalhadas;
+	}
+
+	public void setHorasTrabalhadas(double horasTrabalhadas) {
+		this.horasTrabalhadas = horasTrabalhadas;
+	}
+	
+	
 
 }
