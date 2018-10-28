@@ -3,6 +3,7 @@ package services;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -11,6 +12,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
@@ -28,18 +30,18 @@ import model.entites.PontoColaborador;
 import model.utils.Serializer;
 
 
-
-public class CalculoFolhaService extends Service<ColaboradorPontoOut, Long, String> {
+@WebServlet("/CalculoFolhaService")
+public class CalculoFolhaService extends Service<Colaborador, Long, String> {
 	private static int HTTP_COD_SUCESSO = 200;
 	private static double horaCalculada;
 	
 	//public static double calculoSalario(long matricula, double valorHoraAtual,double horas) throws JAXBException {
 	public static double calculoSalario(Colaborador c) throws JAXBException {
 		PontoMessageRequest p = new PontoMessageRequest();
-		ColaboradorPontoOut colaborador = new ColaboradorPontoOut(c);
-		String serializedObject = new Serializer().serialize(colaborador);
+		String serializedObject = new Serializer().serialize(c);
 		try {
 			p.sendPontoMessageRequest(serializedObject);
+			horaCalculada = c.getCargo().getValorBaseHora() * c.getHorasTrabalhadas();
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -53,23 +55,29 @@ public class CalculoFolhaService extends Service<ColaboradorPontoOut, Long, Stri
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			ColaboradorPontoOut c = parseEntityFromParams(request);
-			
-			
+			Colaborador c = parseEntityFromParams(request);
+			double salario = this.calculoSalario(c);
+			response.setContentType("application/json");
+	        PrintWriter out = response.getWriter();
+	        out.println("{");
+	        out.println("\"Salário\": \""+salario+"\"");
+	        out.println("}");
+	        out.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	
 	@Override
-	protected AbstractDAO<ColaboradorPontoOut, Long, String> createDao() {
+	protected AbstractDAO<Colaborador, Long, String> createDao() {
 		return null;
 	}
 
 	@Override
-	protected ColaboradorPontoOut parseEntityFromParams(HttpServletRequest request) throws Exception {
+	protected Colaborador parseEntityFromParams(HttpServletRequest request) throws Exception {
 		Serializer serializer = new Serializer();
-		return serializer.desserialize(request.getReader(), ColaboradorPontoOut.class);
+		return serializer.desserialize(request.getReader(), Colaborador.class);
 	}
 
 	@Override

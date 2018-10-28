@@ -68,8 +68,11 @@ public abstract class Service<T, U, V> extends HttpServlet {
 			AbstractDAO<T, U, V> dao = createDao();
 			if (action == null || action.equals("put")) {
 				T object = parseEntityFromParams(request);
+				PontoMessageRequest p = new PontoMessageRequest();
 				dao.save(getConnName(), object);
-				ok(response);
+				String serializedObjects = new Serializer().serialize(object);
+				p.sendPontoMessageRequest(serializedObjects);
+				ok(response, serializedObjects);
 			} else if (action.equals("set")) {
 				T object = parseEntityFromParams(request);
 				dao.update(getConnName(), object);

@@ -15,9 +15,19 @@ public class Cargo {
 	private long nivel;
 	
 	private double valorBaseHora;
+	
+	private String setor;
 
 	
 	
+	public String getSetor() {
+		return setor;
+	}
+
+	public void setSetor(String setor) {
+		this.setor = setor;
+	}
+
 	public Cargo() {
 		super();
 	}
