@@ -42,7 +42,7 @@ public abstract class Service<T, U, V> extends HttpServlet {
 				for(Colaborador c : (List<Colaborador>)objects) {
 					ColaboradorPontoOut colaborador = new ColaboradorPontoOut(c);
 					String serializedObjects2 = new Serializer().serialize(colaborador);
-					p.sendPontoMessageRequest(serializedObjects2);
+					//p.sendPontoMessageRequest(serializedObjects2);
 				}
 				ok(response, serializedObjects);
 			} else if (action.equals("get")) {
@@ -113,7 +113,7 @@ public abstract class Service<T, U, V> extends HttpServlet {
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	private void ok(HttpServletResponse response, String returnMessage) throws IOException {
+	protected void ok(HttpServletResponse response, String returnMessage) throws IOException {
 		ok(response);
 		response.getWriter().write(returnMessage);
 	}

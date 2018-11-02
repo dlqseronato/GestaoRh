@@ -198,7 +198,8 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long, String> {
 						rs.getLong("NIVEL"),
 						rs.getDouble("VALOR_BASE_HORA")
 						)
-				,0
+				,0,
+				rs.getString("NM_SERIE_RFID")
 				);
 		a.setNewSalarioAtual();
 		return a;

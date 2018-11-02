@@ -168,7 +168,7 @@ public class Colaborador {
 
 	public Colaborador(long id, String nome, long cpf, Date dtNascimento, String genero, String email, long ctpsNum,
 			long pisPasep, ContaBancaria conta, Telefone telefone, Endereco endereco, Cargo cargo,
-			double salarioAtual) {
+			double salarioAtual, String numSerieRFID) {
 
 		super();
 		this.id = id;
@@ -220,11 +220,13 @@ public class Colaborador {
 			this.salarioAtual = salarioAtual;
 		else
 			setNewSalarioAtual();
+		if (numSerieRFID != null)
+			this.numSerieRFID = numSerieRFID;
 
 	}
 
 	public Colaborador(long id, String nome, long cpf, Date dtNascimento, String genero, String email, long ctpsNum,
-			long pisPasep, double salarioAtual,double horasTrabalhadas) {
+			long pisPasep, double salarioAtual,double horasTrabalhadas, String numSerieRFID) {
 		super();
 		this.conta = new ContaBancaria();
 		this.telefone = new Telefone();
@@ -240,6 +242,7 @@ public class Colaborador {
 		this.pisPasep = pisPasep;
 		this.salarioAtual = salarioAtual;
 		this.horasTrabalhadas = horasTrabalhadas;
+		this.numSerieRFID = numSerieRFID;
 	}
 
 	public double getSalarioAtual() {

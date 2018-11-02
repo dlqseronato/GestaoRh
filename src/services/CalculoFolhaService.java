@@ -21,10 +21,12 @@ import javax.xml.bind.Unmarshaller;
 
 import dao.AbstractDAO;
 import message.PontoMessageRequest;
+import message.PontoMessageResponse;
 import model.dao.CargoDAO;
 import model.dao.ConnectionNames;
 import model.entites.Cargo;
 import model.entites.Colaborador;
+import model.entites.ColaboradorPontoIn;
 import model.entites.ColaboradorPontoOut;
 import model.entites.PontoColaborador;
 import model.utils.Serializer;
@@ -36,33 +38,37 @@ public class CalculoFolhaService extends Service<Colaborador, Long, String> {
 	private static double horaCalculada;
 	
 	//public static double calculoSalario(long matricula, double valorHoraAtual,double horas) throws JAXBException {
-	public static double calculoSalario(Colaborador c) throws JAXBException {
+	public static ColaboradorPontoIn calculoSalario(Colaborador c) throws JAXBException {
+		ColaboradorPontoOut cRequest = new ColaboradorPontoOut(c);
+		String serializedObject = new Serializer().serialize(cRequest);
 		PontoMessageRequest p = new PontoMessageRequest();
-		String serializedObject = new Serializer().serialize(c);
+		PontoMessageResponse r = new PontoMessageResponse(1, serializedObject);
+		
 		try {
 			p.sendPontoMessageRequest(serializedObject);
-			horaCalculada = c.getCargo().getValorBaseHora() * c.getHorasTrabalhadas();
-		} catch (ClassNotFoundException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
 		
-		return horaCalculada;
+		return r.getMessage();
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			Colaborador c = parseEntityFromParams(request);
+			/*
 			double salario = this.calculoSalario(c);
-			response.setContentType("application/json");
 	        PrintWriter out = response.getWriter();
 	        out.println("{");
 	        out.println("\"Salario\": \""+salario+"\"");
 	        out.println("}");
-	        out.close();
+	        out.close();*/
+			Colaborador c = parseEntityFromParams(request);
+			String resp = new Serializer().serialize(CalculoFolhaService.calculoSalario(c));
+			ok(response, resp);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

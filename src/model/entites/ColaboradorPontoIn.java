@@ -1,7 +1,7 @@
 package model.entites;
 
 public class ColaboradorPontoIn {
-	private int Id;
+	private String Id;
 	private Funcionario Funcionario;
 	private double ValorHora;
 	private double horasTrabalhadas;
@@ -9,10 +9,18 @@ public class ColaboradorPontoIn {
 	private double Inss;
 	private double Irrf;
 	private double SalarioLiquido;
-	public int getId() {
+	private double AdicionalPericulosidade;
+	
+	public String getId() {
 		return Id;
 	}
-	public void setId(int id) {
+	public double getAdicionalPericulosidade() {
+		return AdicionalPericulosidade;
+	}
+	public void setAdicionalPericulosidade(double adicionalPericulosidade) {
+		AdicionalPericulosidade = adicionalPericulosidade;
+	}
+	public void setId(String id) {
 		Id = id;
 	}
 	public Funcionario getFuncionario() {
@@ -57,7 +65,7 @@ public class ColaboradorPontoIn {
 	public void setSalarioLiquido(double salarioLiquido) {
 		SalarioLiquido = salarioLiquido;
 	}
-	public ColaboradorPontoIn(int id, model.entites.Funcionario funcionario, double valorHora, double horasTrabalhadas,
+	public ColaboradorPontoIn(String id, model.entites.Funcionario funcionario, double valorHora, double horasTrabalhadas,
 			double salarioBruto, double inss, double irrf, double salarioLiquido) {
 		super();
 		Id = id;
