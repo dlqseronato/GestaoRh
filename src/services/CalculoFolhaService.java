@@ -60,7 +60,7 @@ public class CalculoFolhaService extends Service<Colaborador, Long, String> {
 			response.setContentType("application/json");
 	        PrintWriter out = response.getWriter();
 	        out.println("{");
-	        out.println("\"Salário\": \""+salario+"\"");
+	        out.println("\"Salario\": \""+salario+"\"");
 	        out.println("}");
 	        out.close();
 		} catch (Exception e) {

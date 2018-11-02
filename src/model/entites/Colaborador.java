@@ -19,6 +19,15 @@ public class Colaborador {
 	private Cargo cargo;
 	private double salarioAtual;
 	private double horasTrabalhadas;
+	private String numSerieRFID;
+
+	public String getNumSerieRFID() {
+		return numSerieRFID;
+	}
+
+	public void setNumSerieRFID(String numSerieRFID) {
+		this.numSerieRFID = numSerieRFID;
+	}
 
 	public Colaborador() {
 		super();

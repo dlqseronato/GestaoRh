@@ -65,7 +65,7 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long, String> {
 
 	@Override
 	protected PreparedStatement createStatementSave(Connection conn, Colaborador c, int nextId) throws Exception {
-		PreparedStatement statement = conn.prepareStatement("INSERT INTO POLYGON_OWNER.COLABORADOR (ID,NOME,CPF,DT_NASCIMENTO, GENERO, EMAIL,CTPS_NUM,PIS_PASEP,ID_CONTA_BANCARIA, ID_ENDERECO, ID_CARGO) VALUES (?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+		PreparedStatement statement = conn.prepareStatement("INSERT INTO POLYGON_OWNER.COLABORADOR (ID,NOME,CPF,DT_NASCIMENTO, GENERO, EMAIL,CTPS_NUM,PIS_PASEP,ID_CONTA_BANCARIA, ID_ENDERECO, ID_CARGO, NM_SERIE_RFID) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
 		statement.setInt(1, nextId);
 		statement.setString(2, c.getNome());
 		statement.setLong(3, c.getCpf());
@@ -81,6 +81,7 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long, String> {
 			statement.setLong(9, c.getConta().getId());
 			statement.setLong(10, c.getEndereco().getId());
 			statement.setLong(11, c.getCargo().getId());
+			statement.setString(12, c.getNumSerieRFID());
 		}catch (Exception e) {
 			statement.setLong(9, 0);
 			statement.setLong(10, 0);
@@ -94,7 +95,7 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long, String> {
 	protected PreparedStatement createStatementUpdate(Connection conn, Colaborador c) throws Exception {
 		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-		PreparedStatement statement = conn.prepareStatement("UPDATE POLYGON_OWNER.COLABORADOR SET NOME = ?, CPF = ?, DT_NASCIMENTO = ?, GENERO = ?, EMAIL = ?, CTPS_NUM = ?, PIS_PASEP = ?, ID_CONTA_BANCARIA = ?, ID_ENDERECO = ?, ID_CARGO = ? WHERE ID = ?");
+		PreparedStatement statement = conn.prepareStatement("UPDATE POLYGON_OWNER.COLABORADOR SET NOME = ?, CPF = ?, DT_NASCIMENTO = ?, GENERO = ?, EMAIL = ?, CTPS_NUM = ?, PIS_PASEP = ?, ID_CONTA_BANCARIA = ?, ID_ENDERECO = ?, ID_CARGO = ?, NM_SERIE_RFID = ? WHERE ID = ?");
 		statement.setString(1, c.getNome());
 		statement.setLong(2, c.getCpf());
 		if (c.getDtNascimento() != null)
@@ -109,12 +110,14 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long, String> {
 			statement.setLong(8, c.getConta().getId());
 			statement.setLong(9, c.getEndereco().getId());
 			statement.setLong(10, c.getCargo().getId());
+			statement.setString(11, c.getNumSerieRFID());
 		}catch (Exception e) {
 			statement.setLong(8, 0);
 			statement.setLong(9, 0);
 			statement.setLong(10, 0);
+			statement.setString(11, c.getNumSerieRFID());
 		}
-		statement.setLong(11, c.getId());
+		statement.setLong(12, c.getId());
 		
  		return statement;
 	}
