@@ -32,7 +32,7 @@ public class ColaboradorDAO extends AbstractDAO<Colaborador, Long, String> {
 		
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			return DriverManager.getConnection(url, user, "");
+			return DriverManager.getConnection(url, user, "!root");
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

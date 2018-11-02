@@ -68,7 +68,7 @@ public class CalculoFolhaService extends Service<Colaborador, Long, String> {
 	        out.close();*/
 			Colaborador c = parseEntityFromParams(request);
 			String resp = new Serializer().serialize(CalculoFolhaService.calculoSalario(c));
-			ok(response, resp);
+ 			ok(response, resp);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

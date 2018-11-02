@@ -30,67 +30,63 @@ public class PontoMessageResponse {
 	private final String QUE_POLYGON_OUTPUT = "CalculosProcessados";
 	Timer timer;
 	String json;
-	
+
 	ColaboradorPontoIn colaboradorIn;
 
 	public PontoMessageResponse(int seconds, String json) {
-		timer = new Timer();
-		timer.schedule(new RemindTask(), seconds * 1000);
-		this.json = json;
+		
 	}
-
-	class RemindTask extends TimerTask {
-		public void run() {
-			ConnectionFactory factory = new ConnectionFactory();
-			try {
-				factory.setUri(HOST_POLYGON);
-				Connection connection;
-				connection = factory.newConnection();
-				Channel channel = connection.createChannel();
-				channel.queueDeclare(QUE_POLYGON_OUTPUT, true, false, false, null);
-
-				Consumer consumer = new DefaultConsumer(channel) {
-					@Override
-					public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
-							byte[] body) throws IOException {
-						String message = new String(body, "UTF-8");
-						try {
-							colaboradorIn = parseEntityFromParams(message);
-						} catch (Exception e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}
-				};
-				channel.basicConsume(QUE_POLYGON_OUTPUT, true, consumer);
-
-			} catch (IOException | TimeoutException e) {
-				e.printStackTrace();
-			} catch (KeyManagementException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (NoSuchAlgorithmException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (URISyntaxException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-
-		}
-	}
-
+	
 	private ColaboradorPontoIn parseEntityFromParams(String entitySerialized) throws Exception {
 		Serializer serializer = new Serializer();
 		return serializer.desserialize(entitySerialized, ColaboradorPontoIn.class);
 	}
-	
+
 	public ColaboradorPontoIn getMessage() {
-		while(colaboradorIn == null) {
-			continue;
+		try {
+			while (colaboradorIn == null) {
+				Thread.sleep(1000);
+				GetFromQueue();
+				continue;
+			}
+			
+			return this.colaboradorIn;
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+			return null;
 		}
-		timer.cancel();
-		
-		return this.colaboradorIn;
+	}
+
+	private void GetFromQueue() {
+		ConnectionFactory factory = new ConnectionFactory();
+		try {
+			factory.setUri(HOST_POLYGON);
+			Connection connection;
+			connection = factory.newConnection();
+			Channel channel = connection.createChannel();
+			channel.queueDeclare(QUE_POLYGON_OUTPUT, true, false, false, null);
+
+			Consumer consumer = new DefaultConsumer(channel) {
+				@Override
+				public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+						byte[] body) throws IOException {
+					String message = new String(body, "UTF-8");
+					try {
+						colaboradorIn = parseEntityFromParams(message);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			};
+			channel.basicConsume(QUE_POLYGON_OUTPUT, true, consumer);
+		} catch (IOException | TimeoutException e) {
+			e.printStackTrace();
+		} catch (KeyManagementException e1) {
+			e1.printStackTrace();
+		} catch (NoSuchAlgorithmException e1) {
+			e1.printStackTrace();
+		} catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
 	}
 }
