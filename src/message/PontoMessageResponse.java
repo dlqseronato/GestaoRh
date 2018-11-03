@@ -25,11 +25,15 @@ import model.entites.ColaboradorPontoIn;
 import model.utils.Serializer;
 
 public class PontoMessageResponse {
-	private final String HOST_POLYGON = "amqp://vcudyxng:amJ5wmgaL0u16o_m0OOGDRPeZNDWI-sg@chimpanzee.rmq.cloudamqp.com/vcudyxng";
+	private final String HOST_POLYGON = "amqp://qaawhjrg:ToYjFh11DYBCJId-_1axNQ1xjm4yt0j7@toad.rmq.cloudamqp.com/qaawhjrg";
 	private final String QUE_POLYGON_INPUT = "CalculosAProcessar";
 	private final String QUE_POLYGON_OUTPUT = "CalculosProcessados";
 	Timer timer;
 	String json;
+	
+	Connection connection;
+	ConnectionFactory factory;
+	Channel channel;
 
 	ColaboradorPontoIn colaboradorIn;
 
@@ -50,6 +54,17 @@ public class PontoMessageResponse {
 				continue;
 			}
 			
+			if(channel != null) {
+				try {
+					channel.close();
+					connection.close();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
+			
+			
 			return this.colaboradorIn;
 		} catch (InterruptedException e) {
 			e.printStackTrace();
@@ -58,12 +73,15 @@ public class PontoMessageResponse {
 	}
 
 	private void GetFromQueue() {
-		ConnectionFactory factory = new ConnectionFactory();
+		factory = new ConnectionFactory();
 		try {
 			factory.setUri(HOST_POLYGON);
-			Connection connection;
-			connection = factory.newConnection();
-			Channel channel = connection.createChannel();
+			if(connection == null || !connection.isOpen()) {
+				connection = factory.newConnection();
+			}
+			if(channel == null || !channel.isOpen()) {
+				channel = connection.createChannel();
+			}
 			channel.queueDeclare(QUE_POLYGON_OUTPUT, true, false, false, null);
 
 			Consumer consumer = new DefaultConsumer(channel) {
@@ -79,14 +97,18 @@ public class PontoMessageResponse {
 				}
 			};
 			channel.basicConsume(QUE_POLYGON_OUTPUT, true, consumer);
-		} catch (IOException | TimeoutException e) {
+			
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (KeyManagementException e1) {
-			e1.printStackTrace();
-		} catch (NoSuchAlgorithmException e1) {
-			e1.printStackTrace();
-		} catch (URISyntaxException e1) {
-			e1.printStackTrace();
+			if(channel != null) {
+				try {
+					channel.close();
+					connection.close();
+				} catch (Exception e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+			}
 		}
 	}
 }

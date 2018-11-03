@@ -12,15 +12,17 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
 public class PontoMessageRequest  {
-     private final String HOST_POLYGON = "amqp://vcudyxng:amJ5wmgaL0u16o_m0OOGDRPeZNDWI-sg@chimpanzee.rmq.cloudamqp.com/vcudyxng";
+     private final String HOST_POLYGON = "amqp://qaawhjrg:ToYjFh11DYBCJId-_1axNQ1xjm4yt0j7@toad.rmq.cloudamqp.com/qaawhjrg";
      private final String QUE_POLYGON_INPUT = "CalculosAProcessar";
+     
+     ConnectionFactory factory;
+     Connection connection;
+ 	 Channel channel;
 
 	 String json;
 	 public void sendPontoMessageRequest(String serializedObjects) throws ClassNotFoundException {
 		 	Class.forName("org.slf4j.LoggerFactory");
-	    	ConnectionFactory factory = new ConnectionFactory();
-        	Connection connection;
-        	Channel channel;
+	    	factory = new ConnectionFactory();
 			try {
 	        	factory.setUri(new URI(HOST_POLYGON));
 				connection = factory.newConnection();
@@ -30,17 +32,18 @@ public class PontoMessageRequest  {
 	        	
 	        	channel.close();
 	        	connection.close();
-			} catch (IOException | TimeoutException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
-			} catch (KeyManagementException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				
+				if(channel != null) {
+					try {
+						channel.close();
+						connection.close();
+					} catch (Exception e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+				}
 			}
 	    }
 
